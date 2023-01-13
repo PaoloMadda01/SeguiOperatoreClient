@@ -1,0 +1,29 @@
+﻿<partial name="_Notification" />
+@using ProgettoLogin.Controllers
+@model Account
+
+
+<table class="table table-bordered table-striped" style="width:50%">
+
+    <div class="mb-3">
+        <!--Casella Name-->
+        <input asp-for="Email" asp-for="idAccount" disabled class="form-control" />      <!--Questo  il campo che serve per aggiungere/modificare il nome. In questo caso viende disabilitato-->
+    </div>
+
+</table>
+
+<body>
+    <form method="post" asp-controller="Category" asp-action="AddSitePost" class="btn brn-primary">
+        <input asp-for="id" />
+        <table>
+            <tr>
+                <td>Enter the name of the site</td>
+                <td><input type="text" id="siteNowStr_id" name="siteNowStr" /></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit" class="brn alert-success" style="width:150px" /></td>
+            </tr>
+        </table>
+    </form>
+</body>

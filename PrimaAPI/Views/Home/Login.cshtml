@@ -1,0 +1,59 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+@model Account
+
+<partial name="_Notification" />
+
+<form method="post" asp-controller="Home" asp-action="LoginActionPost">
+    
+    <div class="border p-3 mt-4">
+        <div class="row pb-2">
+            <h2 class="text-primary">
+                Login
+            </h2>
+
+            <hr />
+        </div>
+
+
+
+        <div class="col-15 text-end">
+            <a asp-controller="Category" asp-action="Create" class="btn brn-primary">
+                <i class="bi bi-plus-circle"></i>
+                Create New Account
+            </a>
+        </div>
+
+        <br />
+
+
+        <div asp-validation-summary="All"></div>
+        <div class="mb-3">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>     <!--Fa comparire il messaggio di errore-->
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Pass"></label>
+            <input asp-for="Pass" class="form-control" />
+            <span asp-validation-for="Pass" class="text-danger"></span>
+        </div>
+        
+        
+        <button type="submit" class="btn btn-primary" style="width:150px">
+            Enter
+        </button>
+
+    </div>
+</form>
+
+
+@section Scripts{
+    <!--Client side validation-->
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+    }

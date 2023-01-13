@@ -1,0 +1,132 @@
+﻿
+<partial name="_Notification" />
+
+@model MainModel
+
+@{
+    MainModel mainModelNow = new MainModel();
+    mainModelNow.Name = @Model.Name;
+    mainModelNow.idAccount = @Model.idAccount;
+}
+
+<div class="container p-3">
+    
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">Site List</h2>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-striped" style="width:50%">
+
+        <div class="mb-3">
+            <input asp-for="Email" asp-for="idAccount" disabled class="form-control" />
+        </div>
+
+    </table>
+
+
+    <table class="table table-bordered table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>
+                    Site
+                </th>
+
+                <th>
+                    Date
+                </th>
+
+                <th>
+                    Delete
+                </th>
+            </tr>
+        </thead>
+        
+        <tbody>
+            
+            @for (var i = 0; i < Model.Name.Count; i++)
+            {
+                <tr>
+        
+                    <td width="50%">
+                        
+                        @Model.Name.ElementAt(i)
+                        
+                    </td>
+                    <td width="25%">
+                        @Model.DateRecording.ElementAt(i).ToString()
+                    </td>
+
+                    <td>
+                        <!--Per avere il pulsante Delete-->
+                        <div class="w-75 btn-group" role="group">
+
+                            <form method="post" asp-controller="Category" asp-action="DeleteSite">
+                                <input asp-for="idAccount" />
+                                <input asp-for="@i" />
+
+                                <button class="btn btn-danger" style="width:150px">
+                                    <i class="bi bi-trash"></i>
+                                    Delete Site
+                                </button>
+                            </form>
+
+                            <form method="post" asp-controller="Category" asp-action="DeleteSite">
+                                <input type="hidden" name="idSiteToDelete" value="@i">
+                                <input type="hidden" name="mainModelObj" value="@mainModelNow">
+                                <input type="submit" value="Delete Site">
+                            </form>
+                            
+                            
+                            
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    
+    <div class="translate-middle text-end">
+        <form method="post" asp-controller="Category" asp-action="AddSite" asp-route-id="idAccount">
+            <input asp-for="idAccount" hidden/>
+
+            <button class="brn alert-success" style="width:150px">
+                Add new site
+            </button>
+        </form>
+    </div>
+
+</div>
+
+
+<table class="table table-bordered table-striped" style="width:100%">
+    <tbody>
+        <tr>
+            <td width="80%">
+                Delete All
+            </td>
+
+            <td>
+                <div class="w-75 btn-group" role="group">
+                    <!--Delete-->
+                    <form asp-controller="Category" asp-action="DeleteAccount" method="post">
+                        <input asp-for="idAccount" hidden />
+
+                        <button class="btn btn-danger" style="width:150px">
+                            <i class="bi bi-trash"></i>
+                            Delete Account
+                        </button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+<a asp-controller="Home" asp-action="Login" button type="submit" class="btn btn-secondary" style="width:130px">
+    Log out
+</a>

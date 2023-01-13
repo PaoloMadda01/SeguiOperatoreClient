@@ -1,0 +1,52 @@
+﻿@model AccountXSite
+
+
+<form method="post" asp-action="DeletePost">
+    <!--Chiama il metodo DeletePost all'interno di Category nella cartella Controller-->
+    <input asp-for="id" hidden />                           <!--Viede utilizzato per passare l'id al controller, hidden vuol dire che è nascosto, altrimenti comparirebbe il numero in alto-->
+    <div class="border p-3 mt-4">
+        <div class="row pb-2">
+            <h2 class="text-primary">
+                Delete Site
+            </h2>
+            <hr />
+        </div>
+
+        <div asp-validation-summary="All"></div>
+
+
+        <div class="mb-3">
+            <!--Casella Name-->
+            <label asp-for="idAccount"></label>
+            <input asp-for="idAccount" disabled class="form-control" />      <!--Questo  il campo che serve per aggiungere/modificare il nome. In questo caso viende disabilitato-->
+        </div>
+
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Social</th>
+                    <th scope="col">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+
+
+            </tbody>
+        </table>
+
+        <button type="submit" class="btn btn-danger" style="width:150px">
+            Delete
+        </button>
+        <a asp-controller="Home" asp-action="Login" class="btn btn-secondary" style="width:150px">
+            Back to list
+        </a>
+    </div>
+</form>
+
+@section Scripts{
+                                   <!--Client side validation-->
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+    }
+

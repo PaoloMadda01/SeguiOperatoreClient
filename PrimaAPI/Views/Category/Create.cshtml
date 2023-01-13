@@ -1,0 +1,56 @@
+﻿@model Account
+
+<partial name="_Notification" />
+
+
+<form method="post">
+    <div class="border p-3 mt-4">
+        <div class="row pb-2">
+            <h2 class="text-primary">
+                Sing in
+            </h2>
+
+            <hr />
+        </div>
+
+
+        <div asp-validation-summary="All"></div>  
+        
+        <div class="mb-3">                                                                                                      
+            <!--Casella di testo per aggiungere l'email-->                                                                      
+            <label asp-for="Email"></label>
+            <input asp-for="Email" class="form-control" placeholder="Enter email" />
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>           
+        </div>                                                                                                                  
+                                                                                                                                
+                                                                                                                                
+        <div class="mb-3">                                                                                                      
+            <!--Casella di testo per aggiungere la pass-->                                                                      
+            <label asp-for="Pass"></label>
+            <input asp-for="Pass" class="form-control" placeholder="Password" />
+        </div>                                                                                                                  
+
+    
+
+        <button type="submit" class="btn btn-primary" style="width:150px">
+            Create
+        </button>
+
+        <a asp-controller="Home" asp-action="Login" class="btn btn-secondary" style="width:150px">
+            Back to Home
+        </a>
+
+
+
+    </div>
+</form>
+
+
+
+
+@section Scripts{
+    <!--Client side validation-->
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+    }
