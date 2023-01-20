@@ -8,6 +8,7 @@ namespace ProgettoLogin.Controllers;
 
 public class HomeController : Controller
 {
+    //CategoryController categoryControllerObj { get; set; }
 
     private readonly ILogger<HomeController> _logger;
 
@@ -55,7 +56,6 @@ public class HomeController : Controller
         return View(accountFromDb);
     }
 
-    //private Account accountOfEmail;
 
     //POST action method
     [HttpPost]
@@ -86,28 +86,10 @@ public class HomeController : Controller
 
             if (b_Login)
             {
-                toPass.idAccount = accountOfEmail.id;
-                toPass.Email = _db.Accounts.Single(c => c.id == toPass.idAccount).Email!;
-
-                foreach (var siteNow in _db.AccountXSites)
-                {
-                    if(siteNow.idAccount == accountOfEmail.id)
-                    {
-                        try
-                        {
-                            toPass.DateRecording!.Add(siteNow.DateRecording);
-                            toPass.Name!.Add(_db.Sites.Single(c => c.id == siteNow.idSite).Name!);
-                        }
-                        catch
-                        {
-                            TempData["error"] = "One or more sites were not saved correctly";
-                        }
-                    }
-                }
                 try
                 {
                         TempData["success"] = "Success";
-                        return View("Main", toPass);
+                        return View("Main", OpenMainModel(accountOfEmail.id));
                 }
                 catch (NullReferenceException)
                 {
@@ -122,9 +104,34 @@ public class HomeController : Controller
         }
         return View("Login");
     }
+
+
+
+    //METODO PER VISUALIZZARE LA PAGINA MAIN
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public MainModel OpenMainModel(int idAccountNow)
+    {
+        MainModel toPass = new MainModel();
+
+        toPass.idAccount = idAccountNow;
+        toPass.Email = _db.Accounts.Single(c => c.id == toPass.idAccount).Email!;
+
+        foreach (var siteNow in _db.AccountXSites)
+        {
+            if (siteNow.idAccount == idAccountNow)
+            {
+                try
+                {
+                    toPass.DateRecording!.Add(siteNow.DateRecording);
+                    toPass.Name!.Add(_db.Sites.Single(c => c.id == siteNow.idSite).Name!);
+                }
+                catch
+                {
+                    TempData["error"] = "One or more sites were not saved correctly";
+                }
+            }
+        }
+        return toPass;
+    }
 }
-
-
-
-//https://vscode.dev/github/PaoloMadda01/ProgettoLogin
-
