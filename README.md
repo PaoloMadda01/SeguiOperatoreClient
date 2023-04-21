@@ -100,3 +100,33 @@ Una modal box è una finestra di dialogo o popup che viene visualizzata sopra la
 	Camera: Verrà attivata una model box che permette di visualizzare il video della webcam e, premendo il pulsante “Take Photo”, verrà scattata una foto che verrà salvata o aggiornata nel database.
 
 	DeleteAccount: Utilizzata per chiedere conferma se l’utente vuole veramente eliminare l’account.
+
+![image](https://user-images.githubusercontent.com/109733062/233655695-2dd47c45-c850-4c82-a204-643360ddaba8.png)
+
+Gestione dei messaggi
+
+La gestione dei messaggi, che possono essere di errore o di successo, vengono gestiti con “TempData” che è un meccanismo di archiviazione temporanea dei dati che consente di mantenere i dati tra le richieste HTTP e conserva i dati solo fino a quando non vengono letti o fino alla fine della richiesta HTTP successiva. I messaggi di errore possono essere causati da eccezioni o richieste sbagliate da parte del client.
+
+
+NuGet packages utilizzate
+
+Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilatio	(V: 6.0.11)
+
+Microsoft.EntityFrameworkCore	(V: 6.0.11)
+
+Microsoft.EntityFrameworkCore.SqlServer	(V: 6.0.11)
+
+Microsoft.EntityFrameworkCore.Tools	(V: 6.0.11)
+
+Microsoft.VisualStudio.Web.CodeGeneration.Design	(V: 6.0.11)
+
+Swashbuckle.AspNetCore	(V: 6.3.0)
+
+Chart.js	 (V: 3.7.1)
+
+
+
+Altre informazioni
+
+In questo progetto verrà utilizzata un’Api esterna “WeatherAPI.com”. Essa permette, attraverso la richiesta HTTP GET “timezone”, di conoscere alcune informazioni base di una città. Questa richiesta verrà utilizzata quando verrà visualizzata la lista dei siti web a cui l’account è registrato, riportando le informazioni della città che l’utente ha scelto in fase di registrazione. L’Api “WeatherAPI.com” viene distribuita dal sito “rapidapi.com” che mette a disposizione anche il codice per interagire facilemente con essa. È stata utilizzata inoltre, una seconda Api autoprodotta per gestire la fase di login in modo differente, verrà descritta successivamente.
+Il sito è stato poi pubblicato con i servizi di cloud computering di Azure. Il database è stato migrato dal computer locale al servizio database online fornito da Azure.
