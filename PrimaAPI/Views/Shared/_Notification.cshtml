@@ -22,7 +22,7 @@
 @if (TempData["error"] != null)               //TempData è un data temporaneo che dura solo finchè non viene riaggiornata la pagina
                                              //Se il TempData con key success non è nullo allora...
 {
-    <script src="C:\Users\Paolo\Desktop\PrimaAPI\PrimaAPI\wwwroot\lib\jquery\dist\jquery.min.js"></script>
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script type="text/javascript">
         toastr.error('@TempData["error"]')

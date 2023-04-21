@@ -1,0 +1,201 @@
+﻿
+<partial name="_Notification" />
+@model AdminModel
+
+
+
+<div class="border p-3 mt-4">
+    <div class="row pb-2">
+        <h1 class="text-primary">Admin</h1>
+        <hr />
+    </div>
+    
+    
+    
+    <div class="container p-3">
+    
+        <h3 class="text-secondary">Graph of the number of sites added by users</h3>
+        
+    </div>
+    
+    
+    <style>
+        form {
+            display: inline-block;
+            float: right;
+        }
+    </style>
+    
+    <form method="post" asp-controller="Home" asp-action="LoginActionPost">
+        <input type="hidden" name="openViewAdmin" value="true">
+        <input type="hidden" name="numberOfDaysToShow" value="14">
+        <button class="btn btn-outline-dark">
+            Last 2 weeks
+        </button>
+    </form>
+    
+    <form method="post" asp-controller="Home" asp-action="LoginActionPost">
+        <input type="hidden" name="openViewAdmin" value="true">
+        <input type="hidden" name="numberOfDaysToShow" value="30">
+        <button class="btn btn-outline-dark">
+            Last month
+        </button>
+    </form>
+    
+    <form method="post" asp-controller="Home" asp-action="LoginActionPost">
+        <input type="hidden" name="openViewAdmin" value="true">
+        <input type="hidden" name="numberOfDaysToShow" value="90">
+        <button class="btn btn-outline-dark">
+            Last 3 months
+        </button>
+    </form>
+    
+    <form method="post" asp-controller="Home" asp-action="LoginActionPost">
+        <input type="hidden" name="openViewAdmin" value="true">
+        <input type="hidden" name="numberOfDaysToShow" value="365">
+        <button class="btn btn-outline-dark">
+            Last year
+        </button>
+    </form>
+    
+    <form method="post" asp-controller="Home" asp-action="LoginActionPost">
+        <input type="hidden" name="openViewAdmin" value="true">
+        <input type="hidden" name="numberOfDaysToShow" value="1">
+        <button class="btn btn-outline-dark">
+            From first day
+        </button>
+    </form>
+    
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+        <style>
+            canvas {
+                width: 50%;
+                height: auto;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <canvas id="myChart"></canvas>
+        <script>
+    
+            var chartData = [
+                { DateRecording: '@Model.chartData[0].DateRecording.ToShortDateString()', NumberOfAccount: @Model.chartData[0].NumberOfAccount.ToString()},
+                { DateRecording: '@Model.chartData[1].DateRecording.ToShortDateString()', NumberOfAccount: @Model.chartData[1].NumberOfAccount.ToString()},
+                { DateRecording: '@Model.chartData[2].DateRecording.ToShortDateString()', NumberOfAccount: @Model.chartData[2].NumberOfAccount.ToString()},
+                { DateRecording: '@Model.chartData[3].DateRecording.ToShortDateString()', NumberOfAccount: @Model.chartData[3].NumberOfAccount.ToString()},
+                { DateRecording: '@Model.chartData[4].DateRecording.ToShortDateString()', NumberOfAccount: @Model.chartData[4].NumberOfAccount.ToString()},
+                { DateRecording: '@Model.chartData[5].DateRecording.ToShortDateString()', NumberOfAccount: @Model.chartData[5].NumberOfAccount.ToString()},
+                { DateRecording: '@Model.chartData[6].DateRecording.ToShortDateString()', NumberOfAccount: @Model.chartData[6].NumberOfAccount.ToString()},
+                { DateRecording: '@Model.chartData[7].DateRecording.ToShortDateString()', NumberOfAccount: @Model.chartData[7].NumberOfAccount.ToString()},
+                { DateRecording: '@Model.chartData[8].DateRecording.ToShortDateString()', NumberOfAccount: @Model.chartData[8].NumberOfAccount.ToString()},
+                { DateRecording: '@Model.chartData[9].DateRecording.ToShortDateString()', NumberOfAccount: @Model.chartData[9].NumberOfAccount.ToString()},
+                { DateRecording: '@Model.chartData[10].DateRecording.ToShortDateString()', NumberOfAccount: @Model.chartData[10].NumberOfAccount.ToString()},
+                { DateRecording: '@Model.chartData[11].DateRecording.ToShortDateString()', NumberOfAccount: @Model.chartData[11].NumberOfAccount.ToString()},
+                { DateRecording: '@Model.chartData[12].DateRecording.ToShortDateString()', NumberOfAccount: @Model.chartData[12].NumberOfAccount.ToString()},
+                { DateRecording: '@Model.chartData[13].DateRecording.ToShortDateString()', NumberOfAccount: @Model.chartData[13].NumberOfAccount.ToString()},
+                { DateRecording: '@Model.chartData[14].DateRecording.ToShortDateString()', NumberOfAccount: @Model.chartData[14].NumberOfAccount.ToString()}                
+            ];
+    
+            var labels = chartData.map(function (data) {
+                return data.DateRecording;
+            });
+    
+            var data = chartData.map(function (data) {
+                return data.NumberOfAccount;
+            });
+    
+            var ctx = document.getElementById('myChart').getContext('2d');
+            var chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Number of account",
+                        data: data,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        </script>
+    </body>
+    </html>
+
+
+
+<hr />
+    <div class="container p-3">
+
+    <h3 class="text-secondary">Most saved sites</h3>
+    
+    </div>
+
+    <style>
+        form {
+            display: inline-block;
+            float: right;
+        }
+    </style>
+    
+    <form method="post" asp-controller="Home" asp-action="LoginActionPost">
+        <input type="hidden" name="openViewAdmin" value="true">
+        <input type="hidden" name="numberOfSitesToShow" value="5">
+        <button class="btn btn-outline-dark">
+            Top 5
+        </button>
+    </form>
+    
+    <form method="post" asp-controller="Home" asp-action="LoginActionPost">
+        <input type="hidden" name="openViewAdmin" value="true">
+        <input type="hidden" name="numberOfSitesToShow" value="10">
+        <button class="btn btn-outline-dark">
+        Top 10
+        </button>
+    </form>
+    
+    <form method="post" asp-controller="Home" asp-action="LoginActionPost">
+        <input type="hidden" name="openViewAdmin" value="true">
+        <input type="hidden" name="numberOfSitesToShow" value="1">
+        <button class="btn btn-outline-dark">
+            All
+        </button>
+    </form>
+    
+    @for (int i = 0; i < Model.numberTopSavedSites; i++)
+    {
+        <tr>
+    
+            <p>
+                Site:
+                @Model.topSavedSites[i].Url<br>
+                Percentage of the total: 
+                @Model.topSavedSites[i].SavePerc
+                %
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: @Model.topSavedSites[i].SavePerc%;" aria-valuenow=@Model.topSavedSites[i].SavePerc aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <br>
+            </p>
+        </tr>
+    }
+</div>
+
+
+
+<a asp-controller="Home" asp-action="Login" button type="submit" class="btn btn-secondary" style="width:130px">
+    Log out
+</a>

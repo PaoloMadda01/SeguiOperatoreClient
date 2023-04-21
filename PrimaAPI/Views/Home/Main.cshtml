@@ -1,4 +1,5 @@
 ﻿
+
 <partial name="_Notification" />
 
 @model MainModel
@@ -8,14 +9,14 @@
     
     <div class="row pt-4">
         <div class="col-6">
-            <h2 class="text-primary">Site List</h2>
+            <h1 class="text-primary">Site List</h1>
         </div>
     </div>
 
     <table class="table table-bordered table-striped" style="width:50%">
 
         <div class="mb-3">
-            <input asp-for="Email" asp-for="idAccount" disabled class="form-control" />
+            <input asp-for="Email" asp-for="idAccount" class="form-control form-control-lg" disabled class="form-control" />
         </div>
 
     </table>
@@ -97,7 +98,7 @@
                                                         <p>Are you sure you want to remove this site from your account?</p>
                                                     </div>
                                                     <div class="modal-footer">
-                                                        <form method="post" asp-controller="Category" asp-action="DeleteSite">
+                                                        <form method="post" asp-controller="Edit" asp-action="DeleteSite">
                                                             <input type="hidden" name="siteToDeleteString" value="@Model.Name.ElementAt(i)">
                                                             <input type="hidden" name="idAccountNow" value="@Model.idAccount">
                                                             <button class="btn btn-danger" style="width:150px">
@@ -127,7 +128,7 @@
 </div>
     
     <div class="translate-middle text-end">
-        <form method="post" asp-controller="Category" asp-action="AddSite" asp-route-id="idAccount">
+    <form method="post" asp-controller="Edit" asp-action="AddSite" asp-route-id="idAccount">
             <input asp-for="idAccount" hidden/>
 
             <button class="btn btn-success" style="width:150px">
@@ -142,8 +143,75 @@
 
 <table class="table table-bordered table-striped" style="width:100%">
     <tbody>
+
         <tr>
-            <td width="80%">
+            <td width="70%">
+                <!--API-->
+                @Model.city,
+                @Model.country
+            </td>
+
+            <td>
+                
+                <div class="w-75 btn-group" role="group">
+                    <!--API-->
+                    Latitude: 
+                    @Model.Latitude
+                </div>
+                <div class="w-75 btn-group" role="group">
+                    <!--API-->
+                    Longitude: 
+                    @Model.Longitude
+                </div>
+                <div class="w-75 btn-group" role="group">
+                    <!--API-->
+                    Timezone: 
+                    @Model.Timezone
+                </div>
+                <div class="w-75 btn-group" role="group">
+                    <!--API-->
+                    Localtime: 
+                    @Model.Localtime
+                </div>
+            </td>
+
+        </tr>
+
+
+        <tr>
+            <td width="70%">
+                Change your password
+            </td>
+
+            <td>
+                <div class="w-75 btn-group" role="group">
+                    <!--Delete-->
+                    <button type="button" class="btn btn-warning" style="width:150px" onclick="openModelBoxChangePass()">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Change Password
+                    </button>
+                </div>
+            </td>
+
+        </tr>
+
+
+        <tr>
+            <td width="70%">
+                Add or Change your photo
+            </td>
+            <td>
+                <div class="w-75 btn-group" role="group">
+                    <!--Camera-->
+                    <button type="button" class="btn btn-warning" style="width:150px" id="start-camera" onclick="openModelCamera()">
+                        <input type="file" name="photo" accept="image/*" capture hidden>
+                        Camera
+                    </button>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td width="70%">
                 Delete All
             </td>
 
@@ -165,10 +233,6 @@
 <a asp-controller="Home" asp-action="Login" button type="submit" class="btn btn-secondary" style="width:130px">
     Log out
 </a>
-
-
-
-
 
 
 
@@ -208,7 +272,7 @@
                     <p>Are you sure you want to delete your account?</p>
                 </div>
                 <div class="modal-footer">
-                    <form asp-controller="Category" asp-action="DeleteAccount" method="post">
+                    <form asp-controller="Edit" asp-action="DeleteAccount" method="post">
                         <input asp-for="idAccount" hidden />
 
                         <button class="btn btn-danger" style="width:200px">
@@ -226,4 +290,180 @@
         </div>
     </div>
 </body>
+</html>
+
+
+
+
+
+<html>
+<head>
+    <title>Model Box Change Password</title>
+    <script type="text/javascript">
+        function openModelBoxChangePass() {
+            var modal = document.getElementById("modelBoxChangePass");
+            modal.style.display = "block";
+        }
+
+        function closeModelBoxChangePass() {
+            var modal = document.getElementById("modelBoxChangePass");
+            modal.style.display = "none";
+        }
+
+    </script>
+
+</head>
+
+
+<body>
+
+    <div id="modelBoxChangePass" class="modal">
+        <div class="modal-dialog" role="document">
+            <!-- Modal content -->
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <span onclick="closeModelBoxChangePass()">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <p>You can change your password here</p>
+                    
+                </div>
+
+                <div class="modal-content">
+                    <form asp-controller="Edit" asp-action="ChangePass" method="post">
+                        <input asp-for="idAccount" hidden />
+
+                        <input class="form-control form-control-lg"type="password" placeholder="Current password" id="@Model.PassNow" name="passNow" style="width:350px" />
+                                                                  
+                        <input class="form-control form-control-lg"type="password" placeholder="New password" id="@Model.PassNew" name="passNew" style="width:350px" />
+                                                                  
+                        <input class="form-control form-control-lg"type="password" placeholder="Rewrite new password" id="@Model.PassNewR" name="passNewR" style="width:350px" />
+                        
+
+                        <br>
+                        <td>
+                            &nbsp
+                            <button class="btn btn-warning" style="width:200px">
+                                <i class="bi bi-arrow-clockwise"></i>
+                                Change
+                            </button>
+                            &nbsp
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close" style="width:150px" onclick="closeModelBoxChangePass()">
+                                Close
+                            </button>
+                        </td>
+                        <br>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
+<html>
+<head>
+    <title>Model Box Login with Camera</title>
+    <script type="text/javascript">
+        function openModelCamera() {
+            var modal = document.getElementById("modelBoxCamera");
+            modal.style.display = "block";
+            startCamera();
+        }
+
+        function closeModelCamera() {
+            var modal = document.getElementById("modelBoxCamera");
+            modal.style.display = "none";
+            stopCamera();
+        }
+
+        function startCamera() {
+            var video = document.getElementById("camera-stream");
+            navigator.mediaDevices.getUserMedia({ video: true }) // richiede l'autorizzazione all'accesso della fotocamera
+                .then(function (stream) { // se l'autorizzazione viene concessa
+                    video.srcObject = stream; // imposta lo stream come sorgente del video
+                    video.play(); // avvia la riproduzione del video
+                })
+                .catch(function (error) { // se l'autorizzazione non viene concessa
+                    console.log("Unable to access camera: " + error);
+                });
+        }
+
+        function stopCamera() {
+            var video = document.getElementById("camera-stream");
+            if (video.srcObject) { // se lo stream è stato impostato come sorgente del video
+                var tracks = video.srcObject.getTracks();
+                tracks.forEach(function (track) {
+                    track.stop(); // interrompe tutti i flussi di dati di cui lo stream è composto
+                });
+                video.srcObject = null; // rimuove lo stream come sorgente del video
+            }
+        }
+
+        function takePhoto() {
+            let video = document.getElementById("camera-stream");
+            let photo = document.getElementById("photo");
+            let context = photo.getContext("2d");
+            context.drawImage(video, 0, 0, photo.width, photo.height);
+            console.log(photo);
+            if (photo.width > 0 && photo.height > 0) {
+                photo.toBlob(function (blob) {
+                    let formData = new FormData();
+                    formData.append("photo", blob);
+                    let Email = document.getElementById("Email").value; // valorizza la variabile Email con il valore dell'input con id "Email"
+                    formData.append("email", Email);
+                    let xhr = new XMLHttpRequest();
+                    xhr.open("POST", "/Edit/AddPhoto");
+                    xhr.onload = function () {
+                        CameraLogin(xhr.response);
+                    };
+                    xhr.send(formData);
+                }, "image/jpeg", 0.9);
+            }
+            closeModelCamera();
+        }
+    </script>
+</head>
+
+
+
+<body>
+
+    <div id="modelBoxCamera" class="modal">
+        <div class="modal-dialog" role="document">
+            <!-- Modal content -->
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Login with Camera</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <span onclick="closeModelCamera()">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <video id="camera-stream"></video>
+                    <br>
+                    <canvas id="photo"></canvas>
+                    <input type="file" name="photo" accept="image/*" capture hidden>
+
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close" style="width:150px" onclick="takePhoto()">
+                        Take Photo
+                    </button>
+                    
+                </div>
+
+            </div>
+        </div>
+    </div>
+    </body>
 </html>

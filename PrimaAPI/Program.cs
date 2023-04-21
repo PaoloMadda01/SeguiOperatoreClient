@@ -9,10 +9,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
     builder.Configuration.GetConnectionString("DefaultConnection")          //Configurazione della stringa di connessione "DefaultConnection" per il database
     ));
 
-
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 //Per cambiare il carattere anche della navigation bar
-
 
 var app = builder.Build();
 
