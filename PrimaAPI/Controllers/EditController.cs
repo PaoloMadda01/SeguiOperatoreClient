@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using Site = ProgettoLogin.Models.Site;
 using Newtonsoft.Json;
 using Octokit;
+using System.Security.Principal;
 
 namespace ProgettoLogin.Controllers;
 public class EditController : Controller
@@ -263,23 +264,36 @@ public class EditController : Controller
     //DELETE SITE            DELETE SITE             DELETE SITE
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult DeleteSite(String? siteToDeleteString, int? idAccountNow)
+    public async Task<IActionResult> DeleteSite(String? siteToDeleteString, int? idAccountNow)
     {
-        var SiteObj = _db.Sites.Find(_db.Sites.Single(c => c.Url == siteToDeleteString).id!);
-        var AccountXSitesObj = _db.AccountXSites.Find(_db.AccountXSites.Single(c => c.idSite == SiteObj!.id && c.idAccount == idAccountNow).id!);
-
-        if (AccountXSitesObj == null) return NotFound();
-
-        if (AccountXSitesObj.idAccount == idAccountNow && AccountXSitesObj.idSite == SiteObj!.id)
+        // Controllo se gli input sono nulli o vuoti
+        if (idAccountNow == null || string.IsNullOrEmpty(siteToDeleteString))
         {
-            _db.AccountXSites.Remove(AccountXSitesObj!);
-            _db.SaveChanges();
-            TempData["success"] = "Site deleted successfully";
+            return BadRequest(false);
         }
         try
         {
+            // Cerco il sito da eliminare
+            var siteToDelete = _db.Sites.SingleOrDefault(s => s.Url == siteToDeleteString);
+            if (siteToDelete == null)
+            {
+                return BadRequest("Il sito non esiste");
+            }
+
+            // Controllo se l'utente è autorizzato ad eliminare il sito
+            var accountXSite = _db.AccountXSites.SingleOrDefault(a => a.idSite == siteToDelete.id && a.idAccount == idAccountNow);
+            if (accountXSite == null)
+            {
+                return BadRequest("Non sei autorizzato ad eliminare questo sito");
+            }
+
+            // Elimino il collegamento tra utente e sito
+            _db.AccountXSites.Remove(accountXSite);
+            _db.SaveChanges();
+
             TempData["success"] = "Success";
-            return View("~/Views/Home/Main.cshtml", CreateMainModelAsync(AccountXSitesObj!.idAccount));
+            MainModel model = await CreateMainModelAsync(accountXSite.idAccount);
+            return View("~/Views/Home/Main.cshtml", model);
         }
         catch (NullReferenceException)
         {
