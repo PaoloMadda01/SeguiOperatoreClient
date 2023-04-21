@@ -3,7 +3,13 @@
 In questo Progetto è stato sviluppato un sito web che permette agli utenti di gestire un elenco da loro creato di siti web. L’utente dovrà inizialmente creare un account inserendo email e password. Verrà poi richiesto di aggiunge il primo sito web all’account. Verrà poi visualizzata la pagina in cui potrà gestire la sua lista di siti web. Potrà aggiungerne di nuovi, toglierne oppure eliminare l’account. Nella pagina iniziale verrà richiesto l’email e la password per poter accedere all’account e gestire i propri siti web registrati. Inserendo delle credenziali specifiche è possibile visualizzare la pagina dell’admin dove l’admin potrà visualizzare alcune informazioni sul sito web come: un grafico che raffigura il numero di account creati nei diversi giorni oppure i sitiweb che vengono aggiunti maggiormente negli account.
 
 Database DBLogin
+
 Per poter salvare ed utilizzare in modo corretto le informaioni è stato deciso di dividerle in tre tabelle: “Account”, “AccountXSite” e “Site”. Nella tabella “Account verranno salvate tutte le informazioni riguardanti l’account. Nella tabella “Site” verranno salvati gli url dei siti web. La tabella “AccountXSite” permette di mettere in relazioni, nello specifico una relazione molti a molti, le tabelle descritte precedentemente.
+
+![image](https://user-images.githubusercontent.com/109733062/233655028-2c742073-b964-4222-a1a6-dcdd73c27315.png)
+
+![image](https://user-images.githubusercontent.com/109733062/233655228-63d7d1b4-cea7-48a0-afe7-d0c5af32b794.png)
+
 
 Metodi
 Il progetto è suddiviso in tre controller: “HomeController” e “EditController”. Segue una breve spiegazione dei metodi utilizzati.
