@@ -1,0 +1,57 @@
+﻿<partial name="_Notification" />
+
+@model MainModel
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Page Title</title>
+    <link rel="stylesheet" href="https://bootswatch.com/5/solar/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+        /* inserisci qui il tuo stile personalizzato */
+    </style>
+</head>
+<body>
+    <div class="container p-3">
+        <div class="row pt-4">
+            <div class="col-6">
+                <h1 class="text-primary">Following</h1>
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-striped" style="width:100%">
+        <div class="mb-3">
+            <!--Casella Name-->
+            <input asp-for="Email" asp-for="idAccount" class="form-control form-control-lg" disabled class="form-control" />
+            <!--Questo  il campo che serve per aggiungere/modificare il nome. In questo caso viende disabilitato-->
+        </div>
+        <div class="mb-3">
+            <!--Casella Name-->
+            <input asp-for="Ip" asp-for="idAccount" class="form-control form-control-lg" disabled class="form-control" />
+            <!--Questo  il campo che serve per aggiungere/modificare il nome. In questo caso viende disabilitato-->
+        </div>
+    </table>
+
+    <div class="d-flex justify-content-center align-items-center">
+        <form method="post" asp-controller="Edit" asp-action="Stop">
+            <input asp-for="idAccount" hidden />
+            <button type="submit" class="btn btn-danger btn-lg" style="width: 400px;">
+                <i class="bi bi-sign-stop"></i>
+                Stop
+            </button>
+        </form>
+    </div>
+</body>
+</html>
+
+

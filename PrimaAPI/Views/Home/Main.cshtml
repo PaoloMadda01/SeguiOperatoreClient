@@ -9,174 +9,77 @@
     
     <div class="row pt-4">
         <div class="col-6">
-            <h1 class="text-primary">Site List</h1>
+            <h1 class="text-primary">Account</h1>
         </div>
     </div>
 
-    <table class="table table-bordered table-striped" style="width:50%">
-
-        <div class="mb-3">
-            <input asp-for="Email" asp-for="idAccount" class="form-control form-control-lg" disabled class="form-control" />
-        </div>
-
-    </table>
-
-
-    <table class="table table-bordered table-striped" style="width:100%">
-        <thead>
-            <tr>
-                <th>
-                    Site
-                </th>
-
-                <th>
-                    Date
-                </th>
-
-                <th>
-                    Delete
-                </th>
-            </tr>
-        </thead>
-        
-        <tbody>
-            
-            @for (var i = 0; i < Model.Name.Count; i++)
-            {
-                
-                <tr>
-        
-                        <td width="50%">
-                            @Model.Name.ElementAt(i)
-                        </td>
-                        <td width="25%">
-                            @Model.DateRecording.ElementAt(i).ToString()
-                        </td>
-
-                        <td>
-                            <!--Per avere il pulsante Delete-->
-                            <div class="w-75 btn-group" role="group">
-
-                                <button type="button" class="btn btn-danger" style="width:100px" onclick="openModelBoxDeleteSite()">
-                                    <i class="bi bi-trash"></i>
-                                    Delete Site
-                                </button>
-
-
-                                <html>
-                                    <head>
-                                        <title>Model Box Delete Site</title>
-                                        <script type="text/javascript">
-                                            function openModelBoxDeleteSite() {
-                                                var modal = document.getElementById("modelBoxDeleteSite");
-                                                modal.style.display = "block";
-                                            }
-                                    
-                                            function closeModelBoxDeleteSite() {
-                                                var modal = document.getElementById("modelBoxDeleteSite");
-                                                modal.style.display = "none";
-                                            }
-                                    
-                                        </script>
-                                    
-                                    </head>
-                                    
-                                    <body>
-
-                                        <div id="modelBoxDeleteSite" class="modal">
-                                            <div class="modal-dialog" role="document">
-                                                <!-- Modal content -->
-                                                <div class="modal-content">
-                                    
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">Delete Site</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                                                            <span onclick="closeModelBoxDeleteSite()">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <p>Are you sure you want to remove this site from your account?</p>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <form method="post" asp-controller="Edit" asp-action="DeleteSite">
-                                                            <input type="hidden" name="siteToDeleteString" value="@Model.Name.ElementAt(i)">
-                                                            <input type="hidden" name="idAccountNow" value="@Model.idAccount">
-                                                            <button class="btn btn-danger" style="width:150px">
-                                                                <i class="bi bi-trash"></i>
-                                                                Delete Site
-                                                            </button>
-                                                        </form>
-
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="closeModelBoxDeleteSite()">
-                                                                Close
-                                                        </button>
-                                                    </div>
-                                    
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </body>
-                                </html>
-
-                            </div>
-                        </td>
-                </tr>
-                
-            }
-        </tbody>
-    </table>
 </div>
-    
-    <div class="translate-middle text-end">
-    <form method="post" asp-controller="Edit" asp-action="AddSite" asp-route-id="idAccount">
-            <input asp-for="idAccount" hidden/>
 
-            <button class="btn btn-success" style="width:150px">
-                <i class="bi bi-save"></i>
-                Add new site
-            </button>
-        </form>
+<table class="table table-bordered table-striped" style="width:100%">
+
+    <div class="mb-3">
+        <!--Casella Name-->
+        <input asp-for="Email" asp-for="idAccount" class="form-control form-control-lg" disabled class="form-control" />      <!--Questo  il campo che serve per aggiungere/modificare il nome. In questo caso viende disabilitato-->
     </div>
 
+    <br>
+
+    <div class="mb-3">
+        <!--Casella Name-->
+        <input asp-for="Ip" asp-for="idAccount" class="form-control form-control-lg" disabled class="form-control" />      <!--Questo  il campo che serve per aggiungere/modificare il nome. In questo caso viende disabilitato-->
+    </div>
+
+    <br>
+
+    @if (Model.Connection)
+    {
+        <div class="alert alert-success float-end" role="alert">Connected</div>
+    }
+    else
+    {
+        <div class="alert alert-danger float-end" role="alert">Disconnect</div>
+    }
 
 
+</table>
+
+
+<br>
+
+
+<div class="d-flex justify-content-center align-items-center">
+    <form method="post" asp-controller="Edit" asp-action="Follow">
+        <input asp-for="idAccount" hidden />
+        <button type="submit" class="btn btn-success btn-lg" style="width: 400px; opacity: @(Model.Connection ? 1 : 0.5); cursor: @(Model.Connection ? "auto" : "none")" @(Model.Connection ? "" : "disabled")>
+            <i class="bi bi-caret-right-fill"></i>
+            Start
+        </button>
+    </form>
+</div>
+
+
+
+<br>
+<br>
+<br>
+<br>
 
 <table class="table table-bordered table-striped" style="width:100%">
     <tbody>
 
+
         <tr>
             <td width="70%">
-                <!--API-->
-                @Model.city,
-                @Model.country
+                Photo Added, we recommend adding lots of photos
             </td>
 
             <td>
-                
                 <div class="w-75 btn-group" role="group">
-                    <!--API-->
-                    Latitude: 
-                    @Model.Latitude
-                </div>
-                <div class="w-75 btn-group" role="group">
-                    <!--API-->
-                    Longitude: 
-                    @Model.Longitude
-                </div>
-                <div class="w-75 btn-group" role="group">
-                    <!--API-->
-                    Timezone: 
-                    @Model.Timezone
-                </div>
-                <div class="w-75 btn-group" role="group">
-                    <!--API-->
-                    Localtime: 
-                    @Model.Localtime
+                    @Model.NumberPhoto
                 </div>
             </td>
 
         </tr>
-
 
         <tr>
             <td width="70%">
@@ -189,6 +92,24 @@
                     <button type="button" class="btn btn-warning" style="width:150px" onclick="openModelBoxChangePass()">
                         <i class="bi bi-arrow-clockwise"></i>
                         Change Password
+                    </button>
+                </div>
+            </td>
+
+        </tr>
+
+
+        <tr>
+            <td width="70%">
+                Change your ip
+            </td>
+
+            <td>
+                <div class="w-75 btn-group" role="group">
+                    <!--Delete-->
+                    <button type="button" class="btn btn-warning" style="width:150px" onclick="openModelBoxChangeIp()">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Change ip
                     </button>
                 </div>
             </td>
@@ -229,6 +150,8 @@
 </table>
 
 
+<br>
+<br>
 
 <a asp-controller="Home" asp-action="Login" button type="submit" class="btn btn-secondary" style="width:130px">
     Log out
@@ -356,6 +279,7 @@
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close" style="width:150px" onclick="closeModelBoxChangePass()">
                                 Close
                             </button>
+
                         </td>
                         <br>
                     </form>
@@ -366,6 +290,81 @@
     </div>
 </body>
 </html>
+
+
+
+
+
+<html>
+<head>
+    <title>Model Box Change Ip</title>
+    <script type="text/javascript">
+        function openModelBoxChangeIp() {
+            var modal = document.getElementById("modelBoxChangeIp");
+            modal.style.display = "block";
+        }
+
+        function closeModelBoxChangeIp() {
+            var modal = document.getElementById("modelBoxChangeIp");
+            modal.style.display = "none";
+        }
+
+    </script>
+
+</head>
+
+
+<body>
+
+    <div id="modelBoxChangeIp" class="modal">
+        <div class="modal-dialog" role="document">
+            <!-- Modal content -->
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Ip</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <span onclick="closeModelBoxChangeIp()">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <p>You can change your ip here</p>
+                    
+                </div>
+
+                <div class="modal-content">
+                    <form asp-controller="Edit" asp-action="ChangeIp" method="post">
+                        <input asp-for="idAccount" hidden />
+
+                        <input class="form-control form-control-lg" placeholder="New Ip" id="@Model.Ip" name="Ip" style="width:350px" />
+                                                                 
+                        <br>
+                        <td>
+                            &nbsp
+                            <button class="btn btn-warning" style="width:200px">
+                                <i class="bi bi-arrow-clockwise"></i>
+                                Change
+                            </button>
+                            &nbsp
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close" style="width:150px" onclick="closeModelBoxChangeIp()">
+                                Close
+                            </button>
+                        </td>
+                        <br>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 ﻿
-@model Login
+@model Create
 
 <partial name="_Notification" />
 
@@ -31,8 +31,11 @@
             <input asp-for="Pass" class="form-control" placeholder="Password" />
         </div>                                                                                                                  
 
+
         <div class="mb-3">
-            <td><input class="form-control form-control-lg" type="text" placeholder="Enter the name of your city" id="cityName_id" name="cityName" style="width:350px" /></td>
+            <!--Casella di testo per aggiungere la pass-->
+            <label asp-for="Ip"></label>
+            <input asp-for="Ip" class="form-control" placeholder="Ip" />
         </div>
 
 

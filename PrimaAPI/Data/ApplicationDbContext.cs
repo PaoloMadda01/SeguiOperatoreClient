@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ProgettoLogin.Models;
+using CarrelloLogin.Models;
 
-namespace ProgettoLogin.Data;
+namespace CarrelloLogin.Data;
 public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
@@ -11,7 +11,5 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<Account> Accounts { get; set; }
-    public DbSet<AccountXSite> AccountXSites { get; set; }
-    public DbSet<Site> Sites { get; set; }
 
 }

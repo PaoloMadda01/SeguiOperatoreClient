@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace CarrelloLogin.Models;
-public class Login
+public class Create
 {
     //EMAIL
     [Required(ErrorMessage = "Email is required")]
@@ -16,6 +16,10 @@ public class Login
     [StringLength(20, ErrorMessage = "Must be between 5 and 20 characters", MinimumLength = 5)]
     [DataType(DataType.Password)]
     public string? Pass { get; set; }
+
+    [Required(ErrorMessage = "IP is required")]
+    [RegularExpression(@"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$", ErrorMessage = "Invalid IP address")]
+    public string? Ip { get; set; }
 
 
 }

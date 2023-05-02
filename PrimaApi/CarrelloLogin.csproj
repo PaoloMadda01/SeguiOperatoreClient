@@ -24,8 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="ProgettoLogin">
-      <HintPath>obj\Debug\net6.0\ProgettoLogin.dll</HintPath>
+    <Reference Include="CarrelloLogin">
+      <HintPath>obj\Debug\net6.0\CarrelloLogin.dll</HintPath>
     </Reference>
   </ItemGroup>
 

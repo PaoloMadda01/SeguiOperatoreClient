@@ -1,15 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ProgettoLogin.Data;
-using ProgettoLogin.Models;
+using CarrelloLogin.Data;
+using CarrelloLogin.Models;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
-using Site = ProgettoLogin.Models.Site;
-using Newtonsoft.Json;
+using Account = CarrelloLogin.Models.Account;
+using System.Globalization;
 using Octokit;
 using System.Security.Principal;
+using Microsoft.CodeAnalysis.Differencing;
 
-namespace ProgettoLogin.Controllers;
+namespace CarrelloLogin.Controllers;
 public class EditController : Controller
 {
     private readonly ApplicationDbContext _db;
@@ -22,7 +22,7 @@ public class EditController : Controller
         _db = db;
 
         client = new HttpClient();
-        client.BaseAddress = new Uri("http://192.168.181.129:8000/");   //Indirizzo IP della macchina virtuale
+        client.BaseAddress = new Uri("http://" + 0 + ":8000/");
     }
 
     //GET action method
@@ -31,24 +31,134 @@ public class EditController : Controller
         return View();
     }
 
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Follow(int idAccount)
+    {
+        var account = _db.Accounts.Single(c => c.id == idAccount);
+        var modelMain = await CreateMainModelAsync(idAccount);
+
+        if (account.Ip == null)
+        {
+            TempData["error"] = "IP address not set for this account";
+            return View("~/Views/Edit/Main.cshtml", modelMain);
+        }
+
+        using var client = new HttpClient();
+        client.BaseAddress = new Uri("http://" + account.Ip + ":8000/");
+
+        var content = new MultipartFormDataContent();
+        var modelRecognition = account.modelFile;
+
+        if (modelRecognition == null)
+        {
+            TempData["error"] = "Model file not set for this account, add at least one photo";
+            return View("~/Views/Edit/Main.cshtml", modelMain);
+        }
+
+        if (modelMain.Connection)
+        {
+            
+            try
+            {
+                content.Add(new ByteArrayContent(modelRecognition), "model", "model.pth");
+                client.PostAsync("process_image/", content);
+                return View("~/Views/Edit/Following.cshtml", modelMain);
+            }
+            catch
+            {
+                TempData["error"] = "Error with API";
+                return View("~/Views/Edit/Main.cshtml", modelMain);
+            }
+        }
+
+        TempData["error"] = "Disconnect";
+        return View("~/Views/Home/login.cshtml");
+
+    }
+
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Stop(int idAccount)
+    {
+        var account = _db.Accounts.Single(c => c.id == idAccount);
+        var modelMain = await CreateMainModelAsync(idAccount);
+
+        if (account.Ip == null)
+        {
+            TempData["error"] = "IP address not set for this account";
+            return View("~/Views/Edit/Main.cshtml", modelMain);
+        }
+
+        using var client = new HttpClient();
+        client.BaseAddress = new Uri("http://" + account.Ip + ":8000/");
+
+        var content = new MultipartFormDataContent();
+        var modelRecognition = account.modelFile;
+
+        if (modelRecognition == null)
+        {
+            TempData["error"] = "Model file not set for this account, add at least one photo";
+            return View("~/Views/Edit/Main.cshtml", modelMain);
+        }
+
+        try
+        {
+            client.BaseAddress = new Uri("http://" + modelMain.Ip + ":8000/");
+            client.Timeout = TimeSpan.FromSeconds(4); // Imposta il timeout a 5 secondi
+            HttpResponseMessage response = await client.GetAsync("stop_processing/");
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["success"] = "Stop following";
+                return View("~/Views/Edit/Main.cshtml", modelMain);
+            }
+            else
+            {
+                TempData["error"] = "Error with server";
+            }
+        }
+        catch (HttpRequestException)
+        {
+            TempData["error"] = "Error with server";
+        }
+        catch (TaskCanceledException ex)
+        {
+            client.BaseAddress = new Uri("http://" + modelMain.Ip + ":8000/");
+            client.Timeout = TimeSpan.FromSeconds(4); // Imposta il timeout a 5 secondi
+            HttpResponseMessage response = await client.GetAsync("stop_processing/");
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["success"] = "Stop following";
+                return View("~/Views/Edit/Main.cshtml", modelMain);
+            }
+            else
+            {
+                TempData["error"] = "Error with server, timeout";
+            }
+            throw;
+        }
+
+        return View("~/Views/Edit/Following.cshtml", modelMain);
+
+    }
+
+
+
+
+
     //POST action method
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Create(Login login, String cityName)
+    public async Task<IActionResult> Create(Create create)
     {
         Account account = new Account();
-        account.Email = login.Email;
-        if (cityName != null)
-        {
-            account.CityName = cityName;
-        }
-        else
-        {
-            ModelState.AddModelError("City", "City is required");
-            TempData["error"] = "Try another email";
-            return Redirect("~/Edit/Create");
-        }
-        if (account.Email == login.Pass) ModelState.AddModelError("Email", "Error with your password");
+        account.Email = create.Email;
+
+        if (account.Email == create.Pass) ModelState.AddModelError("Email", "Error with your password");
 
         foreach (var accountNow in _db.Accounts)
         {
@@ -62,15 +172,16 @@ public class EditController : Controller
 
         string salt = GenerateSalt();
         account.PasswordSalt = Encoding.UTF8.GetBytes(salt);
-        string passwordHash = ComputeHash(login.Pass, account.PasswordSalt.ToString(), _pepper, 5000);    //Stringa che si vuole crittografare,
+        string passwordHash = ComputeHash(create.Pass, account.PasswordSalt.ToString(), _pepper, 5000);    //Stringa che si vuole crittografare,
                                                                                 //5000: iteration è il numero di volte in cui il metodo ComputeHash viene eseguito.
         account.PasswordHash = Encoding.UTF8.GetBytes(passwordHash);        //Conversione da string a byte[] per aver maggior sicurezza
-        
+        account.NumberPhoto = 0;
+
         _db.Accounts.Add(account);
         _db.SaveChanges();
 
-        TempData["success"] = "Account created successfully";
-        return View("AddSite", account);
+        MainModel model = await CreateMainModelAsync(account.id);
+        return View("~/Views/Home/Main.cshtml", model);
     }
 
 
@@ -85,6 +196,8 @@ public class EditController : Controller
         {
             if (accountNow.Email == email)
             {
+                client.BaseAddress = new Uri("http://" + accountNow.Ip + ":8000/");   //Indirizzo IP della macchina virtuale
+
                 using (var memoryStream = new MemoryStream())           //Crea un nuovo oggetto MemoryStream per memorizzare temporaneamente i dati dell'immagine dal FormData
                 {
                     photo.CopyTo(memoryStream);
@@ -92,6 +205,7 @@ public class EditController : Controller
                     accountNow.modelFile = await UpdateModelFile(_db.Accounts.Single(c => c.id == accountNow.id).modelFile, memoryStream.ToArray());
 
                     _db.Accounts.Single(c => c.id == accountNow.id).modelFile = accountNow.modelFile;     //Converte i dati dell'immagine in un array di byte e li salva ne db
+                    _db.Accounts.Single(c => c.id == accountNow.id).NumberPhoto = accountNow.NumberPhoto + 1;
                 }
                 b_tempData = true;
                 idAccountNow = accountNow.id;
@@ -152,93 +266,20 @@ public class EditController : Controller
 
 
 
-    //ADDSITE            ADDSITE                  ADDSITE                  
+    //CHANGE IP       CHANGE IP         CHANGE IP         CHANGE IP
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult AddSite(int? idAccount)
+    public async Task<IActionResult> ChangeIpAsync(MainModel mainModel)
     {
-        var accountFromDb = _db.Accounts.Find(idAccount);
+        _db.Accounts.Single(c => c.id == mainModel.idAccount).Ip = mainModel.Ip;
 
-        if (accountFromDb == null) return NotFound();
+        _db.SaveChanges();
+        TempData["success"] = "Success";
 
-        return View(accountFromDb);
+        MainModel model = await CreateMainModelAsync(mainModel.idAccount);
+        return View("~/Views/Home/Main.cshtml", model);
     }
 
-    //POST action method
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddSitePostAsync(String siteNowStr, Account account)
-    {
-        int indexNewSite;
-        var accountNow = _db.Accounts.Find(account.id);
-
-        Regex regex = new Regex("^www\\.[a-zA-Z0-9]+\\.[a-zA-Z]");      //regular expression
-
-        if (regex.IsMatch(siteNowStr!))
-        {
-            // URL è valido
-            try
-            {
-                indexNewSite = _db.Sites.Single(c => c.Url == siteNowStr).id;
-            }
-            catch
-            {
-                Site siteNowObj = new Site();
-                siteNowObj.Url = siteNowStr;
-                _db.Sites.Add(siteNowObj);
-                try
-                {
-                    _db.SaveChanges();
-                }
-                catch
-                {
-                    TempData["error"] = "The site is incorrect, you can only add www sites";
-                    return View("AddSite", accountNow);
-                }
-                indexNewSite = _db.Sites.Single(c => c.Url == siteNowStr).id;
-            }
-
-            bool b_AddNewSite = true;
-            foreach (var nameSite in _db.AccountXSites)
-            {
-                if (nameSite.idSite == indexNewSite && nameSite.idAccount == account.id)
-                {
-                    b_AddNewSite = false;
-                    TempData["success"] = "This site is already saved in your account";
-                    break;
-                }
-            }
-            if (b_AddNewSite)
-            {
-                AccountXSite addNewSite = new AccountXSite();
-                addNewSite.idAccount = account.id;
-                addNewSite.idSite = indexNewSite;
-                addNewSite.DateRecording = DateTime.Now;
-
-                _db.AccountXSites.Add(addNewSite);
-                _db.SaveChanges();
-                TempData["success"] = "Site updated successfully";
-            }
-            try
-            {
-                TempData["success"] = "Success";
-                MainModel model = await CreateMainModelAsync(account.id);
-                return View("~/Views/Home/Main.cshtml", model);
-            }
-            catch (NullReferenceException)
-            {
-                TempData["error"] = "Error with your Account";
-            }
-        }
-        else
-        {
-            // URL non è valido
-            TempData["error"] = "The site is incorrect";
-            return View("AddSite", accountNow);
-        }
-
-        return Redirect("~/Home/Login");
-    }
 
 
     //DELETE                DELETE                  DELETE
@@ -249,11 +290,6 @@ public class EditController : Controller
         var accountToRemove = _db.Accounts.Find(idAccount);
         _db.Accounts.Remove(accountToRemove!);
 
-        foreach (var accountXSiteToRemove in _db.AccountXSites)
-        {
-            if (accountXSiteToRemove.idAccount == idAccount) _db.AccountXSites.Remove(accountXSiteToRemove!);
-        }
-
         _db.SaveChanges();
         TempData["success"] = "Account deleted successfully";
         return Redirect("~/Home/Login");
@@ -261,47 +297,7 @@ public class EditController : Controller
 
 
 
-    //DELETE SITE            DELETE SITE             DELETE SITE
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteSite(String? siteToDeleteString, int? idAccountNow)
-    {
-        // Controllo se gli input sono nulli o vuoti
-        if (idAccountNow == null || string.IsNullOrEmpty(siteToDeleteString))
-        {
-            return BadRequest(false);
-        }
-        try
-        {
-            // Cerco il sito da eliminare
-            var siteToDelete = _db.Sites.SingleOrDefault(s => s.Url == siteToDeleteString);
-            if (siteToDelete == null)
-            {
-                return BadRequest("Il sito non esiste");
-            }
 
-            // Controllo se l'utente è autorizzato ad eliminare il sito
-            var accountXSite = _db.AccountXSites.SingleOrDefault(a => a.idSite == siteToDelete.id && a.idAccount == idAccountNow);
-            if (accountXSite == null)
-            {
-                return BadRequest("Non sei autorizzato ad eliminare questo sito");
-            }
-
-            // Elimino il collegamento tra utente e sito
-            _db.AccountXSites.Remove(accountXSite);
-            _db.SaveChanges();
-
-            TempData["success"] = "Success";
-            MainModel model = await CreateMainModelAsync(accountXSite.idAccount);
-            return View("~/Views/Home/Main.cshtml", model);
-        }
-        catch (NullReferenceException)
-        {
-            TempData["error"] = "Error with your Account";
-        }
-
-        return Redirect("~/Home/Login");
-    }
 
 
     //Metodi per salvare in modo corretto le password con Hash, Salt, Papper e iteration
@@ -336,61 +332,16 @@ public class EditController : Controller
 
         toPass.idAccount = idAccountNow;
         toPass.Email = _db.Accounts.Single(c => c.id == toPass.idAccount).Email!;
-        String cityName = _db.Accounts.Single(c => c.id == toPass.idAccount).CityName!;
-
-        foreach (var siteNow in _db.AccountXSites)
-        {
-            if (siteNow.idAccount == idAccountNow)
-            {
-                try
-                {
-                    toPass.DateRecording!.Add(siteNow.DateRecording);
-                    toPass.Name!.Add(_db.Sites.Single(c => c.id == siteNow.idSite).Url!);
-                }
-                catch
-                {
-                    TempData["error"] = "One or more sites were not saved correctly";
-                }
-            }
-        }
-
-        dynamic data = JsonConvert.DeserializeObject(await TimeZoneApiMethodAsync(cityName));
-
-        toPass.city = data.location.name;
-        toPass.country = data.location.country;
-        toPass.Latitude = data.location.lat;
-        toPass.Longitude = data.location.lon;
-        toPass.Timezone = data.location.tz_id;
-        toPass.Localtime = DateTime.Parse((string)data["location"]["localtime"]);
+        toPass.Ip = _db.Accounts.Single(c => c.id == toPass.idAccount).Ip;
+        toPass.NumberPhoto = _db.Accounts.Single(c => c.id == toPass.idAccount).NumberPhoto;
+        toPass.Connection = await ConnectionApi(toPass.Ip);
 
         return toPass;
     }
 
-    public async Task<string> TimeZoneApiMethodAsync(String cityName)
-    {
-        String timeZone;
-        var client = new HttpClient();
-        var request = new HttpRequestMessage
-        {
-            Method = HttpMethod.Get,
-            RequestUri = new Uri($"https://weatherapi-com.p.rapidapi.com/timezone.json?q={cityName}"),
-            Headers =
-                    {
-                        { "X-RapidAPI-Key", "dd280ef06cmsh3bae67861601777p105672jsn28f2aed5b3cc" },
-                        { "X-RapidAPI-Host", "weatherapi-com.p.rapidapi.com" },
-                    },
-        };
-        using (var response = await client.SendAsync(request))
-        {
-            response.EnsureSuccessStatusCode();
-            timeZone = await response.Content.ReadAsStringAsync();
-        }
-        return timeZone;
-    }
 
 
 
-    //Invia il file pth del modello e la nuova foto per aggiornare il modello
     public async Task<byte[]> UpdateModelFile(byte[] modelFacialRecognition, byte[] photoNow)
     {
         var content = new MultipartFormDataContent();
@@ -402,9 +353,45 @@ public class EditController : Controller
 
         HttpResponseMessage response = await client.PostAsync("update_model/", content);
         response.EnsureSuccessStatusCode();
-        byte[] responseData = await response.Content.ReadAsByteArrayAsync();
+
+        byte[] responseData;
+        if (response.Content.Headers.ContentType.MediaType == "application/octet-stream")
+        {
+            responseData = await response.Content.ReadAsByteArrayAsync();
+        }
+        else
+        {
+            responseData = null;
+        }
 
         return responseData;
     }
+
+
+
+    public async Task<bool> ConnectionApi(string? ip)
+    {
+        try
+        {
+            client.BaseAddress = new Uri("http://" + ip + ":8000/");
+            client.Timeout = TimeSpan.FromSeconds(4); // Imposta il timeout a 5 secondi
+            HttpResponseMessage response = await client.GetAsync("connection_api/");
+            return response.IsSuccessStatusCode;
+        }
+        catch (HttpRequestException)
+        {
+            return false;
+        }
+        catch (TaskCanceledException ex)
+        {
+            if (ex.InnerException is TimeoutException)
+            {
+                return false;
+            }
+            throw;
+        }
+    }
+
+
 
 }
