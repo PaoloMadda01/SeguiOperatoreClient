@@ -48,6 +48,7 @@ public class EditController : Controller
 
         using var client = new HttpClient();
         client.BaseAddress = new Uri("http://" + account.Ip + ":8000/");
+        client.Timeout = TimeSpan.FromSeconds(4); // Imposta il timeout a 5 secondi
 
         var content = new MultipartFormDataContent();
         var modelRecognition = account.modelFile;
@@ -64,7 +65,12 @@ public class EditController : Controller
             try
             {
                 content.Add(new ByteArrayContent(modelRecognition), "model", "model.pth");
-                client.PostAsync("process_image/", content);
+                
+                HttpResponseMessage response = await client.PostAsync("process_image/", content);
+                if (response.IsSuccessStatusCode)
+                {
+                    return View("~/Views/Edit/Main.cshtml", modelMain);
+                }
                 return View("~/Views/Edit/Following.cshtml", modelMain);
             }
             catch
