@@ -48,7 +48,7 @@ public class EditController : Controller
 
         using var client = new HttpClient();
         client.BaseAddress = new Uri("http://" + account.Ip + ":8000/");
-        client.Timeout = TimeSpan.FromSeconds(4); // Imposta il timeout a 5 secondi
+        //client.Timeout = TimeSpan.FromSeconds(4); // Imposta il timeout a 5 secondi
 
         var content = new MultipartFormDataContent();
         var modelRecognition = account.modelFile;
@@ -61,28 +61,42 @@ public class EditController : Controller
 
         if (modelMain.Connection)
         {
-            
+            content.Add(new ByteArrayContent(modelRecognition), "model", "model.pth");
+            client.BaseAddress = new Uri("http://" + account.Ip + ":8000/");
+            client.Timeout = TimeSpan.FromSeconds(4); // Imposta il timeout a 4 secondi
+
             try
             {
-                content.Add(new ByteArrayContent(modelRecognition), "model", "model.pth");
-                
-                HttpResponseMessage response = await client.PostAsync("process_image/", content);
-                if (response.IsSuccessStatusCode)
-                {
-                    return View("~/Views/Edit/Main.cshtml", modelMain);
-                }
+                HttpResponseMessage response = await client.GetAsync("connection_api/");
+
+                // Invia la richiesta POST al server
+                var postTask = client.PostAsync("process_image/", content);
+
                 return View("~/Views/Edit/Following.cshtml", modelMain);
             }
-            catch
+
+            catch (HttpRequestException)
             {
+                Stop(modelMain.idAccount);
                 TempData["error"] = "Error with API";
-                return View("~/Views/Edit/Main.cshtml", modelMain);
+                return View("~/Views/Home/Main.cshtml", modelMain);
             }
+            catch (TaskCanceledException ex)
+            {
+                if (ex.InnerException is TimeoutException)
+                {
+                    Stop(modelMain.idAccount);
+                    TempData["error"] = "You are not connect";
+                    return View("~/Views/Home/Main.cshtml", modelMain);
+                }
+                throw;
+            }
+            
         }
 
+        Stop(modelMain.idAccount);
         TempData["error"] = "Disconnect";
         return View("~/Views/Home/login.cshtml");
-
     }
 
 

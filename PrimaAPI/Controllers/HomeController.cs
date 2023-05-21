@@ -91,7 +91,7 @@ public class HomeController : Controller
         try
         {
             client.BaseAddress = new Uri("http://" + ip + ":8000/");
-            client.Timeout = TimeSpan.FromSeconds(4); // Imposta il timeout a 5 secondi
+            client.Timeout = TimeSpan.FromSeconds(4); // Imposta il timeout a 4 secondi
             HttpResponseMessage response = await client.GetAsync("connection_api/");
             return response.IsSuccessStatusCode;
         }
