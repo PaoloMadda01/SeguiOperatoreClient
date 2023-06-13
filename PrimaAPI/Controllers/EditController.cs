@@ -217,12 +217,13 @@ public class EditController : Controller
             if (accountNow.Email == email)
             {
                 client.BaseAddress = new Uri("http://" + accountNow.Ip + ":8000/");   //Indirizzo IP della macchina virtuale
+                int? indexPhoto = accountNow.NumberPhoto;
 
                 using (var memoryStream = new MemoryStream())           //Crea un nuovo oggetto MemoryStream per memorizzare temporaneamente i dati dell'immagine dal FormData
                 {
                     photo.CopyTo(memoryStream);
 
-                    accountNow.modelFile = await UpdateModelFile(_db.Accounts.Single(c => c.id == accountNow.id).modelFile, memoryStream.ToArray());
+                    accountNow.modelFile = await UpdateModelFile(_db.Accounts.Single(c => c.id == accountNow.id).modelFile, memoryStream.ToArray(), indexPhoto);
 
                     _db.Accounts.Single(c => c.id == accountNow.id).modelFile = accountNow.modelFile;     //Converte i dati dell'immagine in un array di byte e li salva ne db
                     _db.Accounts.Single(c => c.id == accountNow.id).NumberPhoto = accountNow.NumberPhoto + 1;
@@ -362,7 +363,7 @@ public class EditController : Controller
 
 
 
-    public async Task<byte[]> UpdateModelFile(byte[] modelFacialRecognition, byte[] photoNow)
+    public async Task<byte[]> UpdateModelFile(byte[] modelFacialRecognition, byte[] photoNow, int? indexPhoto)
     {
         var content = new MultipartFormDataContent();
         if (modelFacialRecognition != null)
@@ -370,6 +371,9 @@ public class EditController : Controller
             content.Add(new ByteArrayContent(modelFacialRecognition), "model", "model.pth");
         }
         content.Add(new ByteArrayContent(photoNow), "photoNow", "photoNow.jpg");
+
+        // Aggiungi l'indice indexPhoto come parte dei dati della richiesta HTTP
+        content.Add(new StringContent(indexPhoto.ToString()), "indexPhoto");
 
         HttpResponseMessage response = await client.PostAsync("update_model/", content);
         response.EnsureSuccessStatusCode();
