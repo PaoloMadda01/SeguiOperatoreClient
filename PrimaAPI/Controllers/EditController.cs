@@ -56,7 +56,7 @@ public class EditController : Controller
         if (modelRecognition == null)
         {
             TempData["error"] = "Model file not set for this account, add at least one photo";
-            return View("~/Views/Edit/Main.cshtml", modelMain);
+            return View("~/Views/Home/Main.cshtml", modelMain);
         }
 
         if (modelMain.Connection)
@@ -177,6 +177,7 @@ public class EditController : Controller
     {
         Account account = new Account();
         account.Email = create.Email;
+        account.Ip = create.Ip;
 
         if (account.Email == create.Pass) ModelState.AddModelError("Email", "Error with your password");
 
